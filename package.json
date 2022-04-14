@@ -1,0 +1,23 @@
+{
+  "name": "planning-poker-infra",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "ssh://git-codecommit.us-east-2.amazonaws.com/v1/repos/planning-poker-infra",
+  "author": "Fulvio Coelho <coelho.fulvio@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "commitizen": "^4.2.4",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^7.0.4"
+  },
+  "scripts": {
+    "deploy-amplify": "sam deploy -t amplify/app.yml --stack-name IC-Planning-Poker-Amplify-Deploy --region us-east-2 --parameter-overrides Tenant=ic CodeCommitRepo=https://git-codecommit.us-east-2.amazonaws.com/v1/repos/planning-poker-frontend --capabilities CAPABILITY_IAM",
+    "deploy-cognito-dev": "sam deploy -t cognito/template.yml --stack-name Dev-IC-Planning-Poker-Cognito-Deploy --region us-east-2 --parameter-overrides Stage=dev Tenant=ic --capabilities CAPABILITY_IAM",
+    "deploy-cognito-prod": "sam deploy -t cognito/template.yml --stack-name Prod-IC-Planning-Poker-Cognito-Deploy --region us-east-2 --parameter-overrides Stage=prod Tenant=ic --capabilities CAPABILITY_IAM"
+  },
+  "config": {
+     "commitizen": {
+        "path": "./node_modules/cz-conventional-changelog"
+     }
+  }
+}

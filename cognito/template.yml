@@ -1,0 +1,75 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+
+Parameters:
+  Stage:
+    Type: String
+    Default: dev
+    Description: Deployment stage
+  Tenant:
+    Type: String
+    Default: ic
+    Description: Deployment tenant
+
+Resources:
+  iClubsPlanningPokerCognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties: 
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - Name: verified_email
+            Priority: 1
+      # AliasAttributes: 
+      #   - email
+      #   - preferred_username
+      AutoVerifiedAttributes: 
+        - email
+      # MfaConfiguration: OFF
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+      Schema:
+        - Name: team
+          Required: false
+          Mutable: true
+          AttributeDataType: String
+      UsernameAttributes: 
+        - email
+      # UsernameConfiguration: 
+      #   CaseSensitive: True
+      UserPoolName: !Sub ${Stage}_${Tenant}_iclubs_planning_pocker_user_pool
+
+  iClubsPlanningPokerCognitoUserPoolDomain: 
+    Type: AWS::Cognito::UserPoolDomain 
+    Properties:
+      UserPoolId: !Ref iClubsPlanningPokerCognitoUserPool 
+      Domain: "ic-planning-poker"
+
+  iClubsPlanningPokerCognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties: 
+      # AllowedOAuthScopes:
+      #   - email
+      #   - openid
+      # AllowedOAuthFlows: 
+      #   - implicit
+      # AllowedOAuthFlowsUserPoolClient: true
+      # DefaultRedirectURI: http://localhost
+      # CallbackURLs:
+      #   - http://localhost
+      ClientName: iclubs-planning-poker-cognito-client
+      GenerateSecret: true
+      UserPoolId: !Ref iClubsPlanningPokerCognitoUserPool
+
+Outputs:
+  iClubsPlanningPokerCognitoUserPool:
+    Description: "User pool id"
+    Value: !Ref iClubsPlanningPokerCognitoUserPool
+    Export:
+      Name: !Sub ${Stage}-${Tenant}-iclubs-planning-poker-cognito-user-pool
+
+  iClubsPlanningPokerCognitoClient:
+    Description: "User pool client id"
+    Value: !Ref iClubsPlanningPokerCognitoUserPoolClient
+    Export:
+      Name: !Sub ${Stage}-${Tenant}-iclubs-planning-poker-cognito-client
